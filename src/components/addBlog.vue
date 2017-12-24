@@ -6,6 +6,10 @@
         <input type="text" v-model.lazy="blog.title" required />
         <label>Blog Content</label>
         <textarea v-model.lazy="blog.content"></textarea>
+        <label>Category :</label>
+        <select v-model="blog.category">
+            <option v-for="category in categories">{{category}}</option>
+        </select>
         <div id="checkboxes">
             <label>Angular</label>
             <input type="checkbox" value="Angula" v-model="blog.tags" />
@@ -24,6 +28,7 @@
         <p>Blog Title : {{blog.title}}</p>
         <p>Blog Content</p>
         <p>{{blog.content}}</p>
+        <p>Category : {{blog.category}}</p>
         <p>Blog Tags :</p>
         <ul>
             <li v-for="tag in blog.tags">{{tag}}</li>
@@ -33,15 +38,16 @@
 </template>
 
 <script>
-
 export default {
   data () {
     return {
       blog:{
           title:'',
           content:'',
-          tags:[]
-      }
+          tags:[],
+          category:''
+      },
+      categories : ['Web Development','Gaming','Travelling','Science']
     }
   }
 }
