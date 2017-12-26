@@ -22,7 +22,11 @@
             <label>Firebase</label>
             <input type="checkbox" value="Firebase" v-model="blog.tags" />
         </div>
+        <button v-on:click.prevent="post">Add Blog</button>
     </form>
+    <div v-if=submitted>
+        <h3>Thanks for adding your post !</h3>
+    </div>
     <div id="preview">
         <h3>Preview Blog</h3>
         <p>Blog Title : {{blog.title}}</p>
@@ -47,8 +51,22 @@ export default {
           tags:[],
           category:''
       },
-      categories : ['Web Development','Gaming','Travelling','Science']
+      categories : ['Web Development','Gaming','Travelling','Science'],
+      submitted:false
     }
+  },
+  methods : {
+      post: function(){
+          this.$http.post('https://jsonplaceholder.typicode.com/posts',{
+                    "userId": 1,
+                    "title": this.blog.title,
+                    "body": this.blog.content
+                })
+                .then(function(data){
+                    console.log(data);
+                    this.submitted=true;
+                });
+      }
   }
 }
 </script>
