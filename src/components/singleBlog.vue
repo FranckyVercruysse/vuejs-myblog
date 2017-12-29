@@ -1,7 +1,13 @@
 <template>
   <div id="single-blog">
      <h1>{{blog.title}}</h1>
-     <article>{{blog.body}}</article>
+     <article>{{blog.content}}</article>
+     <p>Category : {{blog.category}}</p>
+     <ul>
+       <li v-for="tag in blog.tags" :key="tag">
+         {{tag}}
+       </li>
+     </ul>
   </div>
 </template>
 
@@ -16,11 +22,13 @@ export default {
     }
   },
   created(){
-      this.$http.get('http://jsonplaceholder.typicode.com/posts/'+this.id)
+      this.$http.get('https://my-blog-vue.firebaseio.com/posts/'+ this.id +'.json')
         .then(function(data){
-            console.log(data);
-            this.blog = data.body; 
-        });
+            return data.json();   // returns a promise object
+        })
+        .then(function(data){
+          this.blog=data;
+        })
   }
 }
 </script>
