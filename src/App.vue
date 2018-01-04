@@ -9,6 +9,7 @@
 import addBlog from './components/addBlog.vue';
 import showBlogs from './components/showBlogs.vue';
 import header from './components/header.vue';
+import 'vue-awesome/icons/flag'
 
 export default {
   components : {
@@ -25,4 +26,7 @@ export default {
 </script>
 
 <style>
+body {
+  margin-top: 5em
+}
 </style>

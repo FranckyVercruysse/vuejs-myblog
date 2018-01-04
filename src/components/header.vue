@@ -1,44 +1,51 @@
 <template>
-  <nav>
-      <ul>
-          <li>
-              <router-link to="/" exact>List Blogs</router-link>
-          </li>
-          <li>
-              <router-link to="/add" exact>Add New Blog</router-link>
-          </li>
-      </ul>
-  </nav>
+<div>
+  <b-navbar toggleable="md" type="dark" variant="info" fixed="top">
+    <b-navbar-brand href="#">NavBar</b-navbar-brand>
+    <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+    <b-collapse is-nav id="nav_collapse">
+        <b-navbar-nav >
+        <b-nav-item to="/" exact>List Blogs</b-nav-item>
+        <b-nav-item to="/add" exact>Add New Blog</b-nav-item>
+        </b-navbar-nav>
+        <!-- Right aligned nav items -->
+        <b-navbar-nav class="ml-auto">
+        <b-nav-item href="#">
+            <icon name="sign-in" scale="2" hcenter="true" style="vertical-align:middle" ></icon>
+            Signin
+        </b-nav-item>
+        <b-nav-item href="#">
+            <icon name="sign-out" scale="2"></icon>
+            Signout</b-nav-item>
+        </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+</div>
 </template>
 
 <script>
+import 'vue-awesome/icons/sign-out';
+import 'vue-awesome/icons/sign-in';
+import Icon from 'vue-awesome/components/Icon';
+
 export default {
+    components: {
+    Icon
+  }
 }
 </script>
 
-<style scoped>
-ul{
-    list-style-type: none;
-    text-align: center;
-    margin: 0;
+<style>
+.fa-icon {
+    margin-left: 10px;
+    font-size: 300px;
+    height: 30px;
+    vertical-align: middle;
 }
-li{
-    display: inline-block;
-    margin: 0 10px;
+i {
+    margin-left: 10px;
+    font-size: 30px;
+    height: 30px;
+    vertical-align: middle;
 }
-a{
-    color: #fff;
-    text-decoration: none;
-    padding: 6px 8px;
-    border-radius: 10px;
-}
-nav{
-    background: #444;
-    padding: 14px 0;
-    margin-bottom: 40px;
-}
-.router-link-active{
-    background: #eee;
-    color: #444;
-} 
 </style>
