@@ -8,7 +8,7 @@
         <textarea v-model.lazy="blog.content"></textarea>
         <label>Category :</label>
         <select v-model="blog.category">
-            <option v-for="category in categories">{{category}}</option>
+            <option v-for="(category,index) in categories :key="`category-${index}`" >{{category}}</option>
         </select>
         <div id="checkboxes">
             <label>Angular</label>
