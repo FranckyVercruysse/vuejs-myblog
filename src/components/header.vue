@@ -6,15 +6,19 @@
     <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav >
         <b-nav-item to="/" exact>List Blogs</b-nav-item>
-        <b-nav-item to="/add" exact>Add New Blog</b-nav-item>
+        <b-nav-item to="/add" exact v-if="user">Add New Blog</b-nav-item>
         </b-navbar-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-        <b-nav-item href="#">
-            <icon name="sign-in" scale="2" hcenter="true" style="vertical-align:middle" ></icon>
+        <b-nav-item to="/signin" v-if="!user">
+            <icon name="sign-in" scale="2" hcenter="true"></icon>
             Signin
         </b-nav-item>
-        <b-nav-item href="#">
+        <b-nav-item href="/signup" v-if="!user">
+            <icon name="angle-up" scale="2" hcenter="true"></icon>
+            Signup
+        </b-nav-item>
+        <b-nav-item v-on:click="signOut" v-if="user">
             <icon name="sign-out" scale="2"></icon>
             Signout</b-nav-item>
         </b-navbar-nav>
@@ -26,11 +30,27 @@
 <script>
 import 'vue-awesome/icons/sign-out';
 import 'vue-awesome/icons/sign-in';
+import 'vue-awesome/icons/angle-up';
 import Icon from 'vue-awesome/components/Icon';
+import Firebase from "firebase";
 
 export default {
-    components: {
+  components: {
     Icon
+  },
+  computed: {
+    user() {
+      return this.$store.getters.getUser;
+    }
+  },
+  methods: {
+    signOut: function() {
+      Firebase.auth()
+        .signOut()
+        .then(() => {
+          this.$router.replace('signin');
+        });
+    }
   }
 }
 </script>
@@ -39,12 +59,6 @@ export default {
 .fa-icon {
     margin-left: 10px;
     font-size: 300px;
-    height: 30px;
-    vertical-align: middle;
-}
-i {
-    margin-left: 10px;
-    font-size: 30px;
     height: 30px;
     vertical-align: middle;
 }

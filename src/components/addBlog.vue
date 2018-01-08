@@ -8,7 +8,7 @@
         <textarea v-model.lazy="blog.content"></textarea>
         <label>Category :</label>
         <select v-model="blog.category">
-            <option v-for="(category,index) in categories :key="`category-${index}`" >{{category}}</option>
+            <option v-for="(category,index) in categories" :key="`category-${index}`" >{{category}}</option>
         </select>
         <div id="checkboxes">
             <label>Angular</label>
@@ -35,12 +35,11 @@
         <p>Category : {{blog.category}}</p>
         <p>Blog Tags :</p>
         <ul>
-            <li v-for="tag in blog.tags">{{tag}}</li>
+            <li v-for="(tag,index) in blog.tags" :key="`tag-${index}`">{{tag}}</li>
         </ul>
     </div>
   </div>
 </template>
-
 <script>
 export default {
   data () {
@@ -66,7 +65,6 @@ export default {
   }
 }
 </script>
-
 <style>
 #add-blog *{
     box-sizing: border-box;
@@ -92,12 +90,10 @@ input[type="text"], textarea{
 h3{
     margin-top: 10px;
 }
-
 #checkboxes input{
     display: inline-block;
     margin-right: 10px;
 }
-
 #checkboxes label{
     display:inline-block;
 }
