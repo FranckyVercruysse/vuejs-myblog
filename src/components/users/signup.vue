@@ -163,7 +163,6 @@ export default {
                         console.log(error.message)
                     }
                 );
-            console.log(JSON.stringify(this.form));
         },
         onReset () {
             /* Reset our form values */

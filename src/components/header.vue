@@ -55,7 +55,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .fa-icon {
     margin-left: 10px;
     font-size: 300px;

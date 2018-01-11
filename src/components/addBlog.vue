@@ -1,33 +1,65 @@
 <template>
-  <div id="add-blog">
-    <h2>Add a new blog post</h2>
-    <form>
-        <label>Blog Title</label>
-        <input type="text" v-model.lazy="blog.title" required />
-        <label>Blog Content</label>
-        <textarea v-model.lazy="blog.content"></textarea>
-        <label>Category :</label>
-        <select v-model="blog.category">
-            <option v-for="(category,index) in categories" :key="`category-${index}`" >{{category}}</option>
-        </select>
-        <div id="checkboxes">
-            <label>Angular</label>
-            <input type="checkbox" value="Angula" v-model="blog.tags" />
-            <label>Vue.js</label>
-            <input type="checkbox" value="Vue.js" v-model="blog.tags" />
-            <label>Asp.NET</label>
-            <input type="checkbox" value="Asp.NET" v-model="blog.tags" />
-            <label>MongoDB</label>
-            <input type="checkbox" value="MongoDB" v-model="blog.tags" />
-            <label>Firebase</label>
-            <input type="checkbox" value="Firebase" v-model="blog.tags" />
-        </div>
-        <button v-on:click.prevent="post">Add Blog</button>
-    </form>
-    <div v-if=submitted>
-        <h3>Thanks for adding your post !</h3>
-    </div>
-    <div id="preview">
+  <b-card class="mx-auto" 
+    style="max-width: 60rem;"
+    title="Add a new blog post">
+   <div class="card-body">
+    <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+      <b-form-group id="exampleInputGroup1"
+                    label="Blog Title"
+                    label-for="exampleInput1">
+        <b-form-input id="exampleInput1"
+                      type="text"
+                      v-model.lazy="blog.title" 
+                      required
+                      placeholder="Enter title">
+        </b-form-input>
+      </b-form-group>
+      <b-form-group id="exampleInputGroupX"
+                    label="Add a new blog content :"
+                    label-for="textarea1">
+            <b-form-textarea id="textarea1"
+                     v-model.lazy="blog.content"
+                     placeholder="Enter something"
+                     :rows="3"
+                     :max-rows="6">
+            </b-form-textarea> 
+      </b-form-group>
+      <b-row>
+              <b-col>
+                <b-form-group id="exampleInputGroup3"
+                                label="Category :"
+                                label-for="exampleInput3">
+                    <b-form-select id="exampleInput3"
+                                required
+                                v-model="blog.category"
+                                :options="categories">
+                    </b-form-select>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                    <router-link to="/editCategory">
+                        <icon name='pencil' scale="1"></icon>
+                    </router-link>
+              </b-col>
+      </b-row>
+      <b-row>
+            <b-col>
+                <b-form-group label="Tags :">
+                    <b-form-checkbox-group id="checkboxes1" name="flavour1" v-model="blog.tags" :options="tags">
+                    </b-form-checkbox-group>
+                </b-form-group>
+            </b-col>
+            <b-col>
+                <router-link to="/editTag">
+                        <icon name='pencil' scale="1"></icon>
+                </router-link>
+            </b-col>
+      </b-row>
+      <b-button v-on:click.prevent="post" variant="primary">Add Blog</b-button>
+      <b-button type="reset" variant="danger">Reset</b-button>
+    </b-form>
+  </div>
+  <div id="preview" class="card-body">
         <h3>Preview Blog</h3>
         <p>Blog Title : {{blog.title}}</p>
         <p>Blog Content</p>
@@ -38,23 +70,53 @@
             <li v-for="(tag,index) in blog.tags" :key="`tag-${index}`">{{tag}}</li>
         </ul>
     </div>
-  </div>
+</b-card>
 </template>
+
 <script>
+import 'vue-awesome/icons/pencil';
+import Icon from 'vue-awesome/components/Icon';
+
 export default {
+  components: {
+    Icon
+  },
   data () {
     return {
+      show: true,
       blog:{
           title:'',
           content:'',
           tags:[],
           category:''
       },
-      categories : ['Web Development','Gaming','Travelling','Science'],
       submitted:false
     }
   },
+  computed:{
+      categories(){
+          return this.$store.getters.categories;
+      },
+      tags(){
+          return this.$store.getters.tags;
+      }
+  },
   methods : {
+      onSubmit (evt) {
+      evt.preventDefault();
+      alert(JSON.stringify(this.blog));
+    },
+    onReset (evt) {
+      evt.preventDefault();
+      /* Reset our form values */
+      this.blog.title = '';
+      this.blog.content = '';
+      this.blog.tags = [];
+      this.blog.category = '';
+      /* Trick to reset/clear native browser form validation state */
+      this.show = false;
+      this.$nextTick(() => { this.show = true });
+    },
       post: function(){
           this.$http.post('https://my-blog-vue.firebaseio.com/posts.json', this.blog)
                 .then(function(data){
@@ -65,36 +127,11 @@ export default {
   }
 }
 </script>
-<style>
-#add-blog *{
-    box-sizing: border-box;
-}
-#add-blog{
-    margin: 20px auto;
-    max-width: 500px;
-}
-label{
-    display: block;
-    margin: 20px 0 10px;
-}
-input[type="text"], textarea{
-    display: block;
-    width: 100%;
-    padding: 8px;
-}
-#preview{
-    padding: 10px 20px;
-    border: 1px dotted #ccc;
-    margin: 30px 0;
-}
-h3{
-    margin-top: 10px;
-}
-#checkboxes input{
-    display: inline-block;
-    margin-right: 10px;
-}
-#checkboxes label{
-    display:inline-block;
+<style scoped>
+.fa-icon {
+    margin-left: 10px;
+    font-size: 300px;
+    height: 30px;
+    vertical-align: middle;
 }
 </style>
