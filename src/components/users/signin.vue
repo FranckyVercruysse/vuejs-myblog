@@ -102,7 +102,6 @@ export default {
                         alert(error.message);
                     }
                     );
-            alert(JSON.stringify(this.form));
         },
         onReset (evt) {
             evt.preventDefault();

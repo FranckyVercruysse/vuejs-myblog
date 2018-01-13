@@ -3,7 +3,7 @@
     style="max-width: 60rem;"
     title="Add a new blog post">
    <div class="card-body">
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+    <b-form @reset="onReset" v-if="show">
       <b-form-group id="exampleInputGroup1"
                     label="Blog Title"
                     label-for="exampleInput1">
@@ -32,7 +32,10 @@
                     <b-form-select id="exampleInput3"
                                 required
                                 v-model="blog.category"
-                                :options="categories">
+                                :options="categories"
+                                text-field="name"
+                                value-field="id"
+                                >
                     </b-form-select>
                 </b-form-group>
               </b-col>
@@ -45,7 +48,7 @@
       <b-row>
             <b-col>
                 <b-form-group label="Tags :">
-                    <b-form-checkbox-group id="checkboxes1" name="flavour1" v-model="blog.tags" :options="tags">
+                    <b-form-checkbox-group id="checkboxes1" name="flavour1" v-model="blog.tags" :options="tags" text-field="name" value-field="id">
                     </b-form-checkbox-group>
                 </b-form-group>
             </b-col>
@@ -63,11 +66,11 @@
         <h3>Preview Blog</h3>
         <p>Blog Title : {{blog.title}}</p>
         <p>Blog Content</p>
-        <p>{{blog.content}}</p>
-        <p>Category : {{blog.category}}</p>
+        <p>{{blog.content}} </p>
+        <p>Category : <span v-if="this.blog.category">{{getCategory(this.blog.category).name}} id= {{getCategory(this.blog.category).id}} </span> </p> 
         <p>Blog Tags :</p>
         <ul>
-            <li v-for="(tag,index) in blog.tags" :key="`tag-${index}`">{{tag}}</li>
+            <li v-for="(tag,index) in blog.tags" :key="`tag-${index}`">{{getTag(tag).name}} </li>
         </ul>
     </div>
 </b-card>
@@ -88,7 +91,7 @@ export default {
           title:'',
           content:'',
           tags:[],
-          category:''
+          category:'',
       },
       submitted:false
     }
@@ -102,10 +105,6 @@ export default {
       }
   },
   methods : {
-      onSubmit (evt) {
-      evt.preventDefault();
-      alert(JSON.stringify(this.blog));
-    },
     onReset (evt) {
       evt.preventDefault();
       /* Reset our form values */
@@ -117,13 +116,21 @@ export default {
       this.show = false;
       this.$nextTick(() => { this.show = true });
     },
-      post: function(){
+    post: function(){
           this.$http.post('https://my-blog-vue.firebaseio.com/posts.json', this.blog)
                 .then(function(data){
                     console.log(data);
                     this.submitted=true;
                 });
-      }
+    },
+    getTag(id){
+        return this.tags.filter(tag=>tag.id ==id )[0] //tags is the computed property
+        // return this.$store.getters.tags.filter(tag=>tag.id ==id )[0]
+    },
+    getCategory(id){
+        return this.categories.filter(category=>category.id==id)[0]; // categories is the computed property
+        // return this.$store.getters.categories.filter(category=>category.id==id)[0];
+    }
   }
 }
 </script>
