@@ -22,9 +22,7 @@ export default {
   },
   computed : {
       filteredBlogs(){
-          return this.$store.getters.blogs.filter((blog)=>{
-              return blog.title.match(this.search);
-          });
+          return this.$store.getters.blogs.filter((blog)=>blog.title.match(this.search));
       },
   }
 }

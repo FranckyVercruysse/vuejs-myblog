@@ -9,7 +9,7 @@
         </b-card>   
         <b-card v-show="isCreating" title="Create Tag" class="text-center">
             <b-card-body>
-                <input type="text" v-model="tagName">
+                <input type="text" v-model="newTag.name">
             </b-card-body>
             <b-card-footer>
                 <b-button variant="primary" @click="sendform">Create</b-button>
@@ -29,7 +29,7 @@ export default {
     },
     data(){
         return {
-            tagName:'',
+            newTag:{},
             isCreating: false,
         }
     },
@@ -41,8 +41,9 @@ export default {
             this.isCreating=false;
         },
         sendform(){
-            this.$store.dispatch('createTag',this.tagName);
-            this.tagName='';
+            alert('createTag');
+            this.$store.dispatch('createTag',this.newTag);
+            this.newTag={};
             this.isCreating=false;
         }
     }

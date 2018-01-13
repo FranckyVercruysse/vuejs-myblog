@@ -9,7 +9,7 @@
         </b-card>   
         <b-card v-show="isCreating" title="Create Category" class="text-center">
             <b-card-body>
-                <input type="text" v-model="categoryName">
+                <input type="text" v-model="newCategory.name">
             </b-card-body>
             <b-card-footer>
                 <b-button variant="primary" @click="sendform">Create</b-button>
@@ -29,7 +29,7 @@ export default {
     },
     data(){
         return {
-            categoryName:'',
+            newCategory:{},
             isCreating: false,
         }
     },
@@ -41,8 +41,8 @@ export default {
             this.isCreating=false;
         },
         sendform(){
-            this.$store.dispatch('createCategory',this.categoryName);
-            this.categoryName='';
+            this.$store.dispatch('createCategory',this.newCategory);
+            this.newCategory={};
             this.isCreating=false;
         }
     }

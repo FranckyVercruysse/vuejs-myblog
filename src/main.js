@@ -59,16 +59,21 @@ router.beforeEach((to, from, next) => {
 
 });
 
+
 // Wrap the vue instance in a Firebase onAuthStateChanged method
 // This stops the execution of the navigation guard 'beforeEach'
 // method until the Firebase initialization ends
 firebase.auth().onAuthStateChanged(function (user) {
-
-  new Vue({
-    el: '#app',
-    store: store,
-    router: router,         //router : router
-    render: h => h(App)
-  });
+    new Vue({
+      el: '#app',
+      store: store,
+      router: router,         //router : router
+      render: h => h(App),
+      created(){
+        console.log('setUser + loadCategories + loadTags');
+        this.$store.dispatch('setUser');
+        this.$store.dispatch('loadCategories');
+        this.$store.dispatch('loadTags');
+      }
+    });
 });
-
