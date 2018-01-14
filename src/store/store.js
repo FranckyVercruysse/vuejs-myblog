@@ -86,7 +86,6 @@ export const store = new Vuex.Store({
             context.commit('blogs',blogsArray);
           })
     },
-    
     createCategory(context, payload) {
       firebase.database().ref('categories').push(payload)
         .then(data=>{
@@ -143,16 +142,32 @@ export const store = new Vuex.Store({
         .catch(error=>{console.log(error)})
     }, 
     deleteCategory: (context,payload)=>{
-      context.commit('deleteCategory',payload);
+      firebase.database().ref('categories/'+ payload.id).remove()
+        .then(()=>{context.commit('deleteCategory',payload);})
+        .catch(error=>{console.log(error)})
     },
     saveCategory : (context, payload)=>{
-      context.commit('saveCategory', payload);
+      let catToUpdate = { 
+          name: payload.newCategory.name, 
+          posts: payload.newCategory.posts !== undefined? payload.newCategory.posts : []
+         }
+      firebase.database().ref('categories/'+ payload.newCategory.id).update(catToUpdate)
+        .then(()=>{context.commit('saveCategory', payload);})
+        .catch(error=>{console.log(error)})
     },
     deleteTag: (context,payload)=>{
-      context.commit('deleteTag',payload);
+      firebase.database().ref('tags/'+ payload.id).remove()
+        .then(()=>{context.commit('deleteTag',payload);})
+        .catch(error=>{console.log(error)})
     },
     saveTag : (context, payload)=>{
-      context.commit('saveTag', payload);
+      let tagToUpdate = {
+        name: payload.newTag.name,
+        posts: payload.newTag.posts !== undefined ? payload.newTag.posts : []
+      }
+      firebase.database().ref('tags/'+ payload.newTag.id).update(tagToUpdate)
+        .then(()=>{context.commit('saveTag', payload);})
+        .catch(error=>{console.log(error)})
     }
   }
 });
