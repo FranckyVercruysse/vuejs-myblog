@@ -41,6 +41,10 @@ export default {
             this.isCreating=false;
         },
         sendform(){
+            this.newCategory= {
+                ...this.newCategory,
+                posts :{}
+                };
             this.$store.dispatch('createCategory',this.newCategory);
             this.newCategory={};
             this.isCreating=false;
