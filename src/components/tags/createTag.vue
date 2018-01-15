@@ -41,13 +41,20 @@ export default {
             this.isCreating=false;
         },
         sendform(){
-            alert('createTag');
+            if (this.newTag.name.length<3 ) {
+                alert('The name of the tag must consist of at least 3 letters')
+                return;
+            } 
+            
+            this.newTag= {
+                ...this.newTag,
+                posts :[]
+                };
             this.$store.dispatch('createTag',this.newTag);
             this.newTag={};
             this.isCreating=false;
         }
     }
-  
 }
 </script>
 <style>
