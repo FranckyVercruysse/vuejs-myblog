@@ -17,28 +17,45 @@ export const store = new Vuex.Store({
     // tags:[{id:"1",name:'Angular', posts:["1","2"]},{id:"2",name:'Vue.js'},{id:"3",name:'ASP.NET'},
     //             {id:"4",name:'MongoDB'},{id:"5",name:'Firebase'}],
     blogs:[],
+    submitted:false,
   },
   getters: {
-    getUser: state => {
-      return state.user;
-    },
-    categories: state=>{
-      return state.categories;
-    },
-    tags: state=>{
-      return state.tags;
-    },
-    blogs : state=>{
-      return state.blogs;
-    },
+    getUser: state => state.user,
+    submitted: state => state.submitted,
+    categories: state=> state.categories,
+    tags: state=> state.tags,
+    blogs : state=> state.blogs,
   },
   mutations: {
     setUser: (state, payload) => {
-      console.log('mutations set user !')
       state.user = payload;
     },
     setLoadedCategories(state,payload){
       state.categories=payload;
+    },
+    insertPostInCategory(state,payload){
+      // state.categories.filter(category=>category.id==payload.cat)[0].posts.push(payload.post);
+      console.log('cat posts');
+      if((state.categories.find(category=>category.id == payload.cat)).posts===undefined){
+        console.log('undefined');
+        (state.categories.find(category=>category.id == payload.cat)).posts=[];
+      }
+      (state.categories.find(category=>category.id==payload.cat)).posts.push(payload.post);
+      // console.log(state.categories.find(category=>category.id==payload.cat)[0]);
+    },
+    insertPostInTag(state,payload){
+      // state.tags.filter(tag=>tag.id == payload.tag)[0].posts.push(payload.post);
+      console.log('tag posts');
+      if((state.tags.find(tag=>tag.id == payload.tag)).posts===undefined){
+        console.log('undefined');
+        (state.tags.find(tag=>tag.id == payload.tag)).posts=[];
+      }
+      
+      (state.tags.find(tag=>tag.id == payload.tag)).posts.push(payload.post);
+      // console.log(state.tags.find(tag=>tag.id == payload.tag)[0])
+    },
+    setSubmitted(state,payload){
+      state.submitted=payload;
     },
     setLoadedTags(state,payload){
       state.tags=payload;
@@ -67,7 +84,7 @@ export const store = new Vuex.Store({
     saveTag : (state, payload) =>{
       let index = state.tags.indexOf(payload.oldTag);
       state.tags.splice(index, 1, payload.newTag);
-    }
+    },
   },
   actions: {
     setUser : context => {
@@ -86,6 +103,46 @@ export const store = new Vuex.Store({
             context.commit('blogs',blogsArray);
           })
     },
+    createBlog(context, payload){
+      Vue.http.post('https://my-blog-vue.firebaseio.com/posts.json', payload)
+                .then(data => {
+                    context.dispatch('setSubmitted',true);
+                    context.dispatch('addPostToCategoryToTag',data.body.name)
+                });
+    },
+    addPostToCategoryToTag(context,payload){ 
+      firebase.database().ref('posts/'+payload).once('value')
+        .then(data=>{
+          const obj = data.val();
+          const catPost = {
+            cat: obj.category,
+            post : payload
+          }
+          context.dispatch('insertPostInCategory',catPost);
+          obj.tags.forEach(tag => {
+            const tagPost = {
+              tag: tag,
+              post: payload
+            }
+            context.dispatch('insertPostInTag',tagPost);  
+          });
+        })
+    },
+    insertPostInTag(context,payload){
+      firebase.database().ref('tags/'+payload.tag+'/posts').push(payload.post)
+        .then(data=>{
+          context.commit('insertPostInTag',payload);
+        })
+    },
+    insertPostInCategory(context,payload){
+      firebase.database().ref('categories/'+payload.cat+'/posts').push(payload.post)
+        .then(data=>{
+          context.commit('insertPostInCategory',payload);
+        })
+    },
+    setSubmitted(context,payload){
+      context.commit('setSubmitted',payload);
+    },
     createCategory(context, payload) {
       firebase.database().ref('categories').push(payload)
         .then(data=>{
@@ -103,7 +160,7 @@ export const store = new Vuex.Store({
           const key = data.key;
           context.commit('createTag',{
             ...payload,
-            id : key
+            id : key,
           })
         })
         .catch(error=>console.log(error))
@@ -114,10 +171,16 @@ export const store = new Vuex.Store({
           const categories=[];
           const obj = data.val();
           for(let key in obj){
+            const postarray=[]
+            for(let post in obj[key].posts ){
+              postarray.push(post);
+            }
+            console.log('postarray :');
+            console.log(postarray);
             categories.push({
-              id:key,
-              name:obj[key].name,
-              posts: obj[key].posts
+              id : key,
+              name : obj[key].name,
+              posts : postarray
             })
           }
           context.commit('setLoadedCategories', categories);
@@ -131,10 +194,14 @@ export const store = new Vuex.Store({
           const tags=[];
           const obj = data.val();
           for(let key in obj){
+            const postArray=[];
+            for(let post in obj[key].posts){
+              postArray.push(post);
+            }
             tags.push({
               id:key,
               name:obj[key].name,
-              posts: obj[key].posts
+              posts: postArray
             })
           }
           context.commit('setLoadedTags', tags);

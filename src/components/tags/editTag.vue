@@ -30,7 +30,6 @@ export default {
             return this.$store.getters.tags;
         },
     },
-  
 }
 </script>
 

@@ -41,9 +41,13 @@ export default {
             this.isCreating=false;
         },
         sendform(){
+            if (this.newCategory.name.length<3 ) {
+                alert('The name of the tag must consist of at least 3 letters')
+                return;
+            } 
             this.newCategory= {
                 ...this.newCategory,
-                posts :{}
+                posts :[]
                 };
             this.$store.dispatch('createCategory',this.newCategory);
             this.newCategory={};
