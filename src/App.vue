@@ -6,27 +6,17 @@
 </template>
 
 <script>
-import addBlog from './components/addBlog.vue';
-import showBlogs from './components/showBlogs.vue';
-import header from './components/header.vue';
-
+import addBlog from './components/blogs/addBlog';
+import showBlogs from './components/blogs/showBlogs';
+import header from './components/header';
 
 export default {
   components : {
     'add-blog':addBlog,
     'show-blogs':showBlogs,
-    'app-header': header
-  },
-  data () {
-    return {
-      
-    }
+    'app-header': header,
   },
   methods:{
-    // setUser: function() {
-    //   console.log('setUser');
-    //   this.$store.dispatch('setUser');
-    // },
     validateEmail(email) {
             var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             return re.test(email);
@@ -44,17 +34,16 @@ export default {
                     return 'Password not valid, keep trying .../password must be at least 8 characters long, must contain a lowercase letter, a capital letter and a number.'
                 }
             }
-        },
+    },
     invalidFeedbackEmail (email) {
             return email.length == 0 ? '' : this.validateEmail(email) ? '':'Email not valid, keep trying ...'       
     }
   },
-  // created(){
-  //   // when the app is created run the set user method
-  //   // this uses Vuex to check if a user is signed in
-  //   // check out mutations in the store.js file
-  //   this.setUser();
-  // }
+  created(){
+        console.log('load categories and loadTags in the created life cycle hook of App.vue')
+        this.$store.dispatch('loadCategories');
+        this.$store.dispatch('loadTags');
+  },
 }
 </script>
 

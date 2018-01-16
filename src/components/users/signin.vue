@@ -101,7 +101,11 @@ export default {
                     error => {
                         alert(error.message);
                     }
-                    );
+                );
+        //            
+        // console.log('setUser');
+        // this.$store.dispatch('setUser');
+        //
         },
         onReset (evt) {
             evt.preventDefault();

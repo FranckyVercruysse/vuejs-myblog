@@ -14,9 +14,13 @@
             <icon name="sign-in" scale="2" hcenter="true"></icon>
             Signin
         </b-nav-item>
-        <b-nav-item href="/signup" v-if="!user">
+        <b-nav-item to="/signup" v-if="!user">
             <icon name="angle-up" scale="2" hcenter="true"></icon>
             Signup
+        </b-nav-item>
+        <b-nav-item href="/profile" v-if="user">  
+          <!-- totdo /profile -->
+          <span>Hello,{{user.email}}</span>
         </b-nav-item>
         <b-nav-item v-on:click="signOut" v-if="user">
             <icon name="sign-out" scale="2"></icon>
@@ -32,7 +36,7 @@ import 'vue-awesome/icons/sign-out';
 import 'vue-awesome/icons/sign-in';
 import 'vue-awesome/icons/angle-up';
 import Icon from 'vue-awesome/components/Icon';
-import Firebase from "firebase";
+// import Firebase from "firebase";
 
 export default {
   components: {
@@ -44,12 +48,9 @@ export default {
     }
   },
   methods: {
-    signOut: function() {
-      Firebase.auth()
-        .signOut()
-        .then(() => {
-          this.$router.replace('signin');
-        });
+    signOut() {
+      this.$store.dispatch('signOut');
+      this.$router.replace('signin');
     }
   }
 }

@@ -45,7 +45,6 @@ export default {
                 alert('The name of the tag must consist of at least 3 letters')
                 return;
             } 
-            
             this.newTag= {
                 ...this.newTag,
                 posts :[]
