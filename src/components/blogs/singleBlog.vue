@@ -16,17 +16,23 @@ export default {
   data () {
     return {
       id:this.$route.params.id,
-      blog:{}
+    }
+  },
+  computed:{
+    blog(){
+      return this.$store.getters.blog;
     }
   },
   created(){
-      this.$http.get('https://my-blog-vue.firebaseio.com/posts/'+ this.id +'.json')
-        .then(function(data){
-            return data.json();   // returns a promise object
-        })
-        .then(function(data){
-          this.blog=data;
-        })
+      this.$store.dispatch('blog',this.id);
+      
+      // this.$http.get('https://my-blog-vue.firebaseio.com/posts/'+ this.id +'.json')
+      //   .then(function(data){
+      //       return data.json();   // returns a promise object
+      //   })
+      //   .then(function(data){
+      //     this.blog=data;
+      //   })
   }
 }
 </script>

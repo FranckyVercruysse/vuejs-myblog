@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Firebase from 'firebase';
+// import Firebase from 'firebase';
 import { firebase } from '@firebase/app';
 
 Vue.use(Vuex);
@@ -9,50 +9,48 @@ export const store = new Vuex.Store({
   state: {
     user: null,
     categories:[],
-    // categories : [{id:"1",name:'Web Development',posts:["1","3"]}
-    //               ,{id:"2", name:'Gaming',posts:["2","4"]},
-    //               {id:"3",name:'Travelling',posts:["5"]},
-    //               {id:"4",name:'Science'}],
     tags:[],
-    // tags:[{id:"1",name:'Angular', posts:["1","2"]},{id:"2",name:'Vue.js'},{id:"3",name:'ASP.NET'},
-    //             {id:"4",name:'MongoDB'},{id:"5",name:'Firebase'}],
     blogs:[],
+    blog:{},
+    blogToEdit:{
+      id:'',
+      oldBlog : {},
+      newBlog : {
+        title : '',
+        content : '',
+        category : '',
+        tags : []
+      }
+    },
     submitted:false,
   },
   getters: {
     getUser: state => state.user,
+    blog: state => state.blog,
+    blogToEdit : state => state.blogToEdit,
     submitted: state => state.submitted,
     categories: state=> state.categories,
     tags: state=> state.tags,
     blogs : state=> state.blogs,
   },
   mutations: {
-    setUser: (state, payload) => {
-      state.user = payload;
+    setUser (state, payload) {
+      state.user = payload
     },
     setLoadedCategories(state,payload){
       state.categories=payload;
     },
     insertPostInCategory(state,payload){
-      // state.categories.filter(category=>category.id==payload.cat)[0].posts.push(payload.post);
-      console.log('cat posts');
       if((state.categories.find(category=>category.id == payload.cat)).posts===undefined){
-        console.log('undefined');
         (state.categories.find(category=>category.id == payload.cat)).posts=[];
       }
       (state.categories.find(category=>category.id==payload.cat)).posts.push(payload.post);
-      // console.log(state.categories.find(category=>category.id==payload.cat)[0]);
     },
     insertPostInTag(state,payload){
-      // state.tags.filter(tag=>tag.id == payload.tag)[0].posts.push(payload.post);
-      console.log('tag posts');
       if((state.tags.find(tag=>tag.id == payload.tag)).posts===undefined){
-        console.log('undefined');
         (state.tags.find(tag=>tag.id == payload.tag)).posts=[];
       }
-      
       (state.tags.find(tag=>tag.id == payload.tag)).posts.push(payload.post);
-      // console.log(state.tags.find(tag=>tag.id == payload.tag)[0])
     },
     setSubmitted(state,payload){
       state.submitted=payload;
@@ -62,6 +60,21 @@ export const store = new Vuex.Store({
     },
     blogs: (state, payload) =>{
       state.blogs = payload;
+    },
+    blog(state, payload){
+      state.blog =payload;
+    },
+    blogToEdit(state, payload){
+      state.blogToEdit = {
+        id : payload.id,
+        oldBlog : payload.data,
+        newBlog :{
+          title : payload.data.title,
+          content : payload.data.content,
+          category : payload.data.category,
+          tags: payload.data.tags
+        }
+      }
     },
     createCategory: (state,payload)=>{
       state.categories.push(payload);
@@ -91,7 +104,21 @@ export const store = new Vuex.Store({
       const user = Firebase.auth().currentUser;
       context.commit('setUser',user);
     },
-    blogs : context =>{
+    autoSignIn (context, payload) {
+      context.commit('setUser', {
+        id: payload.uid,
+        name: payload.displayName,
+        email: payload.email,
+        photoUrl: payload.photoURL
+      })
+    },
+    signOut (context) {
+      firebase.auth().signOut()
+        .then(()=>{ 
+          context.commit('setUser',null);
+        })
+    },
+    blogs(context) {
         Vue.http.get('https://my-blog-vue.firebaseio.com/posts.json')
         .then(data =>  data.json())
         .then(data => {
@@ -102,6 +129,45 @@ export const store = new Vuex.Store({
             }
             context.commit('blogs',blogsArray);
           })
+    },
+    blog(context, payload) {
+      Vue.http.get('https://my-blog-vue.firebaseio.com/posts/'+ payload +'.json')
+        .then(function(data){
+            return data.json();   // returns a promise object
+        })
+        .then(function(data){
+          context.commit('blog',data)
+        })
+    },
+    blogToEdit(context, payload) {
+      Vue.http.get('https://my-blog-vue.firebaseio.com/posts/'+ payload +'.json')
+        .then(function(data){
+            return data.json();   // returns a promise object
+        })
+        .then(function(data){
+          context.commit('blogToEdit',{data :data, id:payload})
+        })
+    },
+    updateBlog({context,getters}){
+      // console.log('TEST')
+      // console.log(getters.blogToEdit.id);
+      
+      var db = firebase.database();   //state.blogToEdit
+      var ref = db.ref('posts/'+getters.blogToEdit.id);
+      ref.set({
+        title: 'xxxxx',
+      });
+
+      var db = firebase.database().ref('posts/'+getters.blogToEdit.id).set({
+        title: getters.blogToEdit.newBlog.title,
+        content : getters.blogToEdit.newBlog.content,
+        tags : getters.blogToEdit.newBlog.tags,
+        category : getters.blogToEdit.newBlog.category
+        })
+        .then((data)=>{
+            console.log('success');
+          })
+        .catch(error=>console.log(error));
     },
     createBlog(context, payload){
       Vue.http.post('https://my-blog-vue.firebaseio.com/posts.json', payload)
@@ -175,8 +241,6 @@ export const store = new Vuex.Store({
             for(let post in obj[key].posts ){
               postarray.push(post);
             }
-            console.log('postarray :');
-            console.log(postarray);
             categories.push({
               id : key,
               name : obj[key].name,
@@ -188,7 +252,6 @@ export const store = new Vuex.Store({
         .catch(error=>{console.log(error)})
     }, 
     loadTags(context){
-      console.log('loadTags');
       firebase.database().ref('tags').once('value')
         .then(data=>{
           const tags=[];
