@@ -2,18 +2,23 @@
   <div id="show-blogs">
     <h1>All Blog Articles</h1>
     <input type="text" v-model="search" placeholder="search blog" />
-    <div v-for="blog in filteredBlogs" :key="blog.id" id="single-blog">
-        <b-row>
-            <b-col>
-                <router-link :to="'/blog/'+blog.id"><h2>{{blog.title}}</h2></router-link>
-            </b-col>
-            <b-col>
-                <router-link :to="'/edit/' + blog.id">
-                    <icon name='pencil' scale="1"></icon>
-                </router-link>
-            </b-col>
-        </b-row>
-        <div>{{blog.content}}</div>
+    <div v-show="show">
+        <div v-for="blog in filteredBlogs" :key="blog.id" id="single-blog">
+            <b-row>
+                <b-col>
+                    <router-link :to="'/blog/'+blog.id"><h2>{{blog.title}}</h2></router-link>
+                </b-col>
+                <b-col>
+                    <router-link :to="'/edit/' + blog.id">
+                        <icon name='pencil' scale="1"></icon>
+                    </router-link>
+                </b-col>
+            </b-row>
+            <div>{{blog.content}}</div>
+        </div>
+    </div>
+    <div v-show="!show">
+        no blog posts found
     </div>
   </div>
 </template>
@@ -38,6 +43,9 @@ export default {
       filteredBlogs(){
           return this.$store.getters.blogs.filter((blog)=>blog.title.match(this.search));
       },
+      show(){
+          return this.filteredBlogs.length >0;
+      }
   }
 }
 </script>

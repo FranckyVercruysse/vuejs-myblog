@@ -142,7 +142,10 @@ export default {
             console.log('return : '+this.click_counts);
             return;
         }
+        console.log('before create Blog (payload) :')
+        console.log(this.blog);
         this.$store.dispatch('createBlog',this.blog);
+
     },
     getTag(id){
         return this.tags.filter(tag=>tag.id ==id )[0] //tags is the computed property

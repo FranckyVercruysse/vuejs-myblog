@@ -63,7 +63,6 @@ export default {
   },
   computed : {
       blogToEdit(){
-          console.log('COMPUTED')
           return this.$store.getters.blogToEdit;
       },
       categories(){
