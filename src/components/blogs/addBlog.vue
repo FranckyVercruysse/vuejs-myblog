@@ -153,7 +153,11 @@ export default {
     getCategory(id){
         return this.categories.filter(category=>category.id==id)[0]; // categories is the computed property
     }
-  }
+  },
+  created(){
+        this.$store.dispatch('blogs');
+  },
+  
 }
 </script>
 <style scoped>

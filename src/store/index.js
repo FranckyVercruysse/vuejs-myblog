@@ -223,6 +223,22 @@ export const store = new Vuex.Store({
               })
         }
     },
+    async checkDeleteCategoryConsistency({getters}, payload){
+      let posts =[];
+      getters.categories.find(category =>category.id==payload)
+        .posts.forEach(post=>{
+          posts.push(getters.blogs.find(blog=>blog.id==post).title);
+        });
+      return posts;
+    },
+    async checkDeleteTagConsistency({getters},payload){
+      let posts = [];
+      getters.tags.find(tag=>tag.id==payload)
+        .posts.forEach(post=>{
+          posts.push(getters.blogs.find(blog=>blog.id==post).title);
+        });
+      return posts;        
+    },
     updateChangesToTags({getters,commit,dispatch}){
       let newTags = getters.blogToEdit.newBlog.tags;  //new selected tags
       let allTags = getters.tags;

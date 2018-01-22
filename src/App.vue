@@ -43,6 +43,7 @@ export default {
         console.log('load categories and loadTags in the created life cycle hook of App.vue')
         this.$store.dispatch('loadCategories');
         this.$store.dispatch('loadTags');
+        // this.$store.dispatch('blogs')
   },
 }
 </script>
